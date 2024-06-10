@@ -121,4 +121,7 @@ df["Zusammen Anzahl "][4]
 
 
 # Ein bisschen wasa ausprobieren
-df.corrwith(df["Zusammen Anzahl "])
+try:
+    df.corrwith(df["Zusammen Anzahl "])
+except ValueError as VE:
+    print(VE)

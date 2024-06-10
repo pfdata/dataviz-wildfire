@@ -9,3 +9,6 @@ DOCS_PATH = PROJECT_PATH.joinpath("docs")
 OUTPUT_PATH = PROJECT_PATH.joinpath("output")
 SAMPLE_PATH = PROJECT_PATH.joinpath("sample")
 # DATA = PATH()
+
+
+BMEL = DATA_PATH.joinpath("bmel-statistik_de")

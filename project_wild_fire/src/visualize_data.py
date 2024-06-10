@@ -16,21 +16,25 @@ from pathlib import Path
 
 # In[3]:
 
+import common_paths as cp
 
 # TODO Pfad muss bei euch verändert werden. Ihr könnt gerne diese Zeile verändern, sodass sie bei uns allen funktioniert.
-root_dir = "/Users/jonathan/Documents/GitHub/Uni/data-science-viz/project_wild_fire/data/bmel-statistik_de"
+# root_dir = "/Users/jonathan/Documents/GitHub/Uni/data-science-viz/project_wild_fire/data/bmel-statistik_de"
+cp.BMEL
 
 # Alle Dateien aus allen Directories zu pathlist hinzufügen, die mit "1B.csv" enden.
 # Anschließend die Pfade in String umwandeln um sie sortieren zu können.
-pathlist = Path(root_dir).rglob("*1B.csv")
+pathlist = Path(cp.BMEL).rglob("*1B.csv")
 pathlist = [str(file) for file in pathlist]
 pathlist.sort()
 
 # Auslesen der Dateien aus pathlist und erstellen von Dataframes aus den csv files.
 # Hinzufügen zur dframes Liste um sie anschließend zu einem einzigen Dataframe zu vereinigen.
-dframes = []
-for path in pathlist:
-    dframes.append(pd.read_csv(path))
+# dframes = []
+# for path in pathlist:
+#     dframes.append(pd.read_csv(path))
+# Alternative for this "for" loop is the same as you did for the var "pathlist" using list comprehension
+dframes = [pd.read_csv(path) for path in pathlist]
 
 df = pd.concat(dframes)
 print(df)
@@ -115,9 +119,3 @@ df["Zusammen Anzahl "][4]
 
 # Ein bisschen wasa ausprobieren
 df.corrwith(df["Zusammen Anzahl "])
-
-
-# In[ ]:
-
-
-# In[ ]:

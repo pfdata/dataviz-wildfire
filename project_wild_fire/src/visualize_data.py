@@ -96,7 +96,10 @@ Hier werden allerdings Werte über tausend durch den '.' als Komma gelesen und s
 
 
 for i in range(0, 18):
-    pl.scatter(x=range(1991, 2019), y=df["Zusammen Anzahl "][i].astype(float))
+    try:
+        pl.scatter(x=range(1991, 2019), y=df["Zusammen Anzahl "][i].astype(float))
+    except ValueError as VE:
+        print(VE)
 
 # fig1= pl.scatter(x = range(1991, 2019), y = df['Zusammen Anzahl '][18].astype(float))
 # fig1.show()

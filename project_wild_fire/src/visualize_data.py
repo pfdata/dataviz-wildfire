@@ -18,8 +18,6 @@ from pathlib import Path
 
 import common_paths as cp
 
-# TODO Pfad muss bei euch verändert werden. Ihr könnt gerne diese Zeile verändern, sodass sie bei uns allen funktioniert.
-# root_dir = "/Users/jonathan/Documents/GitHub/Uni/data-science-viz/project_wild_fire/data/bmel-statistik_de"
 cp.BMEL
 
 # Alle Dateien aus allen Directories zu pathlist hinzufügen, die mit "1B.csv" enden.
@@ -30,10 +28,6 @@ pathlist.sort()
 
 # Auslesen der Dateien aus pathlist und erstellen von Dataframes aus den csv files.
 # Hinzufügen zur dframes Liste um sie anschließend zu einem einzigen Dataframe zu vereinigen.
-# dframes = []
-# for path in pathlist:
-#     dframes.append(pd.read_csv(path))
-# Alternative for this "for" loop is the same as you did for the var "pathlist" using list comprehension
 dframes = [pd.read_csv(path) for path in pathlist]
 
 df = pd.concat(dframes)
@@ -50,7 +44,7 @@ print("Rows :", df.index)
 print("size: ", df.size)
 print("shape: ", df.shape)
 print("Number of Dimensions: ", df.ndim)
-print(df.index)
+# print(df.index)
 
 
 # In[5]:
@@ -63,7 +57,7 @@ print(df.info)
 
 
 # Daten für Baden Würtemberg zwischen 1991-2020
-df.loc[0]
+# df.loc[0]
 
 
 # In[7]:

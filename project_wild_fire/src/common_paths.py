@@ -12,3 +12,4 @@ SAMPLE_PATH = PROJECT_PATH.joinpath("sample")
 
 
 BMEL = DATA_PATH.joinpath("bmel-statistik_de")
+CMIP6 = DATA_PATH.joinpath("cmip6")

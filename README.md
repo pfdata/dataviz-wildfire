@@ -39,6 +39,22 @@ All the required packages will be listed on the `requirements.txt` file.
 
 A copy of the project planning will be at [Project Notes](./notes/project_plan.md). Otherwise use the link to contribute online at [Hackmd - Planning](https://hackmd.informatik.uni-bremen.de/j6lQBfpTSDOP7SPxjBKXQg).
 
+## Python Scripts - Jupyter
+
+The idea is to showcase cenarios the jupyter notebooks are optimal. But for software development they are not great. For now it is not possible to keep the versions fo the software since it is recoginized as an executable by GIT system.
+
+Convert (all) Jupyter notebooks to python:
+
+```
+jupyter nbconvert *.ipynb  --to="python"
+```
+
+Convert python scripts to jupyter (the package p2j should be in the requirements list):
+
+```
+p2j script.py
+```
+
 ## Our Project:
 
 The folder structure follow as this:

@@ -1,4 +1,3 @@
-import common_paths  # Assuming this is a custom module with common paths defined
 import geopandas as gpd
 import matplotlib.pyplot as plt
 import xarray as xr
@@ -15,6 +14,7 @@ class GeoDataFrameVisualizer:
 
     def assign_colors(self, colors):
         """Assigns colors to the GeoDataFrame."""
+
         if self.df_ger is None:
             raise ValueError(
                 "GeoDataFrame not initialized. Call read_shapefile() first."

@@ -71,36 +71,3 @@ class GeoDataFrameVisualizer:
         finally:
             # Ensure the dataset is closed after plotting
             dataset.close()
-
-
-if __name__ == "__main__":
-    shapefile_path = common_paths.CMIP6.joinpath("vg2500_geo84/vg2500_bld.shp")
-    nc_file_path = common_paths.CMIP6.joinpath(
-        "tasmax_EUR-11_MPI-M-MPI-ESM-LR_historical_r2i1p1_DWD-EPISODES2018_v1-r1_mon_195101-200512.nc"
-    )
-    pr_file_path = common_paths.CLIMA_MODEL.joinpath("PR_data_climatemodel.nc")
-    colors = [
-        "blue",
-        "orange",
-        "yellow",
-        "red",
-        "purple",
-        "green",
-        "pink",
-        "black",
-        "white",
-        "grey",
-        "violet",
-        "maroon",
-        "olive",
-        "cyan",
-        "magenta",
-        "teal",
-    ]
-    visualizer = GeoDataFrameVisualizer(shapefile_path)
-    visualizer.read_shapefile()
-    visualizer.assign_colors(colors)
-    # visualizer.plot_geodataframe(title="Germany Map with Color Coding")
-    visualizer.plot_heatmap(
-        pr_file_path, variable_name="pr", time_index=0, cmap="coolwarm"
-    )

@@ -45,13 +45,17 @@ class WildFire:
         return pd.concat(df_list)
 
     def get_all_ffa(self) -> DataFrame:
+        """Forest fire areas by stand type"""
         return self.merge_csv_to_dfs(self.get_all_csv("1B"))
 
     def get_all_causes(self) -> List:
+        """Causes"""
         return self.merge_csv_to_dfs(self.get_all_csv("2B"))
 
     def get_montly_numbers(self) -> List:
+        """Forest fires in the individual months of the calendar year - number"""
         return self.merge_csv_to_dfs(self.get_all_csv("5B"))
 
     def get_monthly_area(self) -> List:
+        """Forest fires in the individual months of the calendar year - area"""
         return self.merge_csv_to_dfs(self.get_all_csv("6B"))

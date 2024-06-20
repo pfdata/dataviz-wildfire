@@ -47,20 +47,31 @@ class GeoDataFrameVisualizer:
         try:
             # Extract necessary data variables
             data_array = dataset[variable_name].isel(time=time_index)
+            # longitudes = data_array.sel(rlon=slice(150, 300))
+            # latitudes = data_array.sel(rlat=slice(150, 300))
+            data_array = (
+                data_array.where(-10 <= data_array.rlon, drop=True)
+                .where(data_array.rlon <= 0, drop=True)
+                .where(-6 <= data_array.rlat, drop=True)
+                .where(data_array.rlat <= 8, drop=True)
+                .squeeze()
+            )
             # print(data_array)
-            latitudes = data_array["lat"]
-            longitudes = data_array["lon"]
+            # latitudes = data_array["rlat"]
+            # longitudes = data_array["rlon"]
             values = data_array.values
 
             plt.figure(figsize=(10, 8))
             plt.imshow(
                 values,
-                extent=(
-                    longitudes.min(),
-                    longitudes.max(),
-                    latitudes.min(),
-                    latitudes.max(),
-                ),
+                # extent=[
+                #     longitudes.min(),
+                #     longitudes.max(),
+                #     latitudes.min(),
+                #     latitudes.max(),
+                # ],
+                # vmin=0,
+                # vmax=1,
                 cmap=cmap,
                 origin="lower",
             )

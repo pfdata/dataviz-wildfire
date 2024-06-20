@@ -20,3 +20,4 @@ DATA = PROJECT_PATH.joinpath("data")
 
 BMEL = DATA_PATH.joinpath("bmel-statistik_de")
 CMIP6 = DATA_PATH.joinpath("cmip6")
+CLIMA_MODEL = DATA_PATH.joinpath("climate_model")

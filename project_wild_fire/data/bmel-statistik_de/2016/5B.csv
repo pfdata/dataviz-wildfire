@@ -1,5 +1,5 @@
-,Jan,Feb,Mär,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
-Baden-Württemberg,0,0,2,0,2,2,3,9,8,1,1,0
+Land,Jan,Feb,Mar,Apr,Mai,Jun,Jul,Aug,Sep,Okt,Nov,Dez
+Baden-Wuerttemberg,0,0,2,0,2,2,3,9,8,1,1,0
 Bayern,0,0,0,3,7,7,13,21,1,0,0,3
 Berlin,0,0,0,1,2,0,0,1,0,0,0,0
 Brandenburg,0,0,10,30,71,43,27,24,42,0,0,1
@@ -14,7 +14,7 @@ Saarland,0,0,0,0,2,0,0,1,0,0,0,0
 Sachsen,0,0,1,4,15,6,3,11,12,0,0,0
 Sachsen-Anhalt,0,0,1,6,16,12,4,14,16,0,0,0
 Schleswig-Holstein,0,0,0,0,0,0,0,0,0,0,0,0
-Thüringen,0,0,0,0,4,0,1,7,2,0,0,0
-Früheres Bundesgebiet,1,0,5,12,35,12,35,54,34,7,1,4
-Neue Länder,0,0,13,42,114,63,39,57,79,0,0,1
-Deutschland,1,0,18,5,19,75,7,111,113,7,1,5
+Thueringen,0,0,0,0,4,0,1,7,2,0,0,0
+Frueheres Bundesgebiet,1,0,5,12,35,12,35,54,34,7,1,4
+Neue Laender,0,0,13,42,114,63,39,57,79,0,0,1
+Deutschland,1,0,18,5,1 9,75,7,111,113,7,1,5

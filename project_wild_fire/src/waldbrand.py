@@ -38,7 +38,7 @@ class WildFire:
         df_list = []
         for path in csv_list:
             year = re.search(r"\d{4}", path)[0]
-            df_ffa = pd.read_csv(path)
+            df_ffa = pd.read_csv(path, index_col=0)
             df_ffa["Year"] = year
             df_list.append(df_ffa)
 
@@ -59,3 +59,15 @@ class WildFire:
     def get_monthly_area(self) -> List:
         """Forest fires in the individual months of the calendar year - area"""
         return self.merge_csv_to_dfs(self.get_all_csv("6B"))
+
+    def get_monthly_data(self) -> DataFrame:
+
+        df_5B = self.get_montly_numbers()
+        df_6B = self.get_monthly_area()
+
+        # Merge the data frames on the 'Land' column
+        merged_df = pd.merge(
+            df_5B, df_6B, on=["Land", "Year"], suffixes=("_number", "_area")
+        )
+
+        return merged_df

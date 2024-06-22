@@ -1,5 +1,10 @@
-Land,Nadelholz Fläche (ha),Laubholz Fläche (ha),"Zusammen Anzahl ",Zusammen Fläche (ha)
+<<<<<<< project_wild_fire/data/bmel-statistik_de/2008/1B.csv
+Land,Nadelholz Fläche (ha),Laubholz Fläche (ha),"Zusammen Anzahl",Zusammen Fläche (ha)
 Baden-Wuerttemberg,"2.0","5.6","18","7.5"
+=======
+Land,Nadelholz Flaeche (ha),Laubholz Flaeche (ha),"Zusammen Anzahl",Zusammen Flaeche (ha)
+Baden-Wuerttemberg,"2.0","5.6","18","7.5"
+>>>>>>> project_wild_fire/data/bmel-statistik_de/2008/1B.csv
 Bayern,"23.6","19.6","42","43.2"
 Berlin,"4.8","0.5","19","5.2"
 Brandenburg,"208.6","156.4","340","365.0"

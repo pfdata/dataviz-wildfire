@@ -47,11 +47,26 @@ class WildFire:
     def get_all_ffa(self) -> DataFrame:
         return self.merge_csv_to_dfs(self.get_all_csv("1B"))
 
-    def get_all_causes(self) -> List:
+    def get_all_causes(self) -> DataFrame:
         return self.merge_csv_to_dfs(self.get_all_csv("2B"))
 
-    def get_montly_numbers(self) -> List:
+    def get_montly_numbers(self) -> DataFrame:
         return self.merge_csv_to_dfs(self.get_all_csv("5B"))
 
-    def get_monthly_area(self) -> List:
+    def get_monthly_area(self) -> DataFrame:
         return self.merge_csv_to_dfs(self.get_all_csv("6B"))
+
+    def get_monthly_data(self) -> DataFrame:
+
+        df_5B = self.get_montly_numbers()
+        df_6B = self.get_monthly_area()
+        # Standardize the column names for merging
+        df_5B.rename(columns={"Land": "Land"}, inplace=True)
+        df_6B.rename(columns={"Land": "Land"}, inplace=True)
+        # Merge the data frames on the 'Land' column
+        merged_df = pd.merge(df_5B, df_6B, on="Land", suffixes=("_number", "_area"))
+
+        # Display the merged dataframe to check the result
+        print(merged_df.head())
+
+        return merged_df

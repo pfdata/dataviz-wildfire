@@ -38,7 +38,7 @@ class WildFire:
         df_list = []
         for path in csv_list:
             year = re.search(r"\d{4}", path)[0]
-            df_ffa = pd.read_csv(path)
+            df_ffa = pd.read_csv(path, index_col=0)
             df_ffa["Year"] = year
             df_list.append(df_ffa)
 
@@ -60,13 +60,10 @@ class WildFire:
 
         df_5B = self.get_montly_numbers()
         df_6B = self.get_monthly_area()
-        # Standardize the column names for merging
-        df_5B.rename(columns={"Land": "Land"}, inplace=True)
-        df_6B.rename(columns={"Land": "Land"}, inplace=True)
-        # Merge the data frames on the 'Land' column
-        merged_df = pd.merge(df_5B, df_6B, on="Land", suffixes=("_number", "_area"))
 
-        # Display the merged dataframe to check the result
-        print(merged_df.head())
+        # Merge the data frames on the 'Land' column
+        merged_df = pd.merge(
+            df_5B, df_6B, on=["Land", "Year"], suffixes=("_number", "_area")
+        )
 
         return merged_df

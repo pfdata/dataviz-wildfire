@@ -48,16 +48,13 @@ class WildFire:
         """Forest fire areas by stand type"""
         return self.merge_csv_to_dfs(self.get_all_csv("1B"))
 
-    def get_all_causes(self) -> List:
-        """Causes"""
+    def get_all_causes(self) -> DataFrame:
         return self.merge_csv_to_dfs(self.get_all_csv("2B"))
 
-    def get_montly_numbers(self) -> List:
-        """Forest fires in the individual months of the calendar year - number"""
+    def get_montly_numbers(self) -> DataFrame:
         return self.merge_csv_to_dfs(self.get_all_csv("5B"))
 
-    def get_monthly_area(self) -> List:
-        """Forest fires in the individual months of the calendar year - area"""
+    def get_monthly_area(self) -> DataFrame:
         return self.merge_csv_to_dfs(self.get_all_csv("6B"))
 
     def get_monthly_data(self) -> DataFrame:

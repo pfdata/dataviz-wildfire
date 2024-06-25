@@ -17,6 +17,20 @@ class WildFire:
             "5B": "Forest fires in the individual months of the calendar year - number",
             "6B": "Forest fires in the individual months of the calendar year - area",
         }
+        self.month_map = {
+            "Jan": 1,
+            "Feb": 2,
+            "Mar": 3,
+            "Apr": 4,
+            "Mai": 5,
+            "Jun": 6,
+            "Jul": 7,
+            "Aug": 8,
+            "Sep": 9,
+            "Okt": 10,
+            "Nov": 11,
+            "Dez": 12,
+        }
 
     def get_all_csv(self, table_name) -> List:
         """"""
@@ -45,6 +59,7 @@ class WildFire:
         return pd.concat(df_list)
 
     def get_all_ffa(self) -> DataFrame:
+        """Forest fire areas by stand type"""
         return self.merge_csv_to_dfs(self.get_all_csv("1B"))
 
     def get_all_causes(self) -> DataFrame:
@@ -67,3 +82,27 @@ class WildFire:
         )
 
         return merged_df
+
+    def melt_and_map_months(self, dataframe, id_vars=["Year"]):
+        """
+        Function to melt a dataframe and map month names to numeric values.
+
+        Parameters:
+        - dataframe (pd.DataFrame): The dataframe to melt.
+        - id_vars (list): List of column names to use as identifier variables. Default is ['Year'].
+
+        Returns:
+        - pd.DataFrame: Melted dataframe with 'Month' column mapped to numeric values.
+        """
+        # Melt the dataframe with the month names mapped to numeric values
+        df_melted = pd.melt(
+            dataframe, id_vars=id_vars, var_name="Month", value_name="nFires"
+        )
+
+        # Map the Month column to numeric values using the defined mapping
+        df_melted["Month"] = df_melted["Month"].map(self.month_map)
+
+        # Sort by Year and Month if needed
+        df_melted = df_melted.sort_values(by=["Year", "Month"])
+
+        return df_melted

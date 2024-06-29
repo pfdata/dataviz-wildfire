@@ -93,6 +93,34 @@ def evaluate_models(X_train, X_test, y_train, y_test):
     return results
 
 
+def evaluate_model(X_train, X_test, y_train, y_test, model_name):
+    models = {
+        "Linear Regression": LinearRegression(),
+        "Ridge Regression": Ridge(),
+        "Lasso Regression": Lasso(),
+        "Decision Tree Regression": DecisionTreeRegressor(),
+        "Random Forest Regression": RandomForestRegressor(),
+        "Support Vector Regression": SVR(),
+        "Gradient Boosting Regression": GradientBoostingRegressor(),
+    }
+
+    if model_name not in models:
+        raise ValueError(
+            f"Model {model_name} not recognized. Available models: {list(models.keys())}"
+        )
+
+    model = models[model_name]
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+
+    result = {"model": model, "mse": mse, "r2_score": r2}
+    # logging.info(f"{model_name} - MSE: {mse}, R2: {r2}")
+
+    return result
+
+
 def prepare_data_for_ml(merged_data, features, test_size=0.2, random_state=42):
     X = merged_data[features]
     y = merged_data["nFires"]
@@ -105,20 +133,20 @@ def prepare_data_for_ml(merged_data, features, test_size=0.2, random_state=42):
     return results
 
 
-if __name__ == "__main__":
-    parameter_list = [
-        wt.DwdObservationParameter.MONTHLY.PRECIPITATION_HEIGHT,
-        wt.DwdObservationParameter.MONTHLY.TEMPERATURE_AIR_MAX_200,
-        wt.DwdObservationParameter.MONTHLY.WIND_FORCE_BEAUFORT,
-        wt.DwdObservationParameter.MONTHLY.SUNSHINE_DURATION,
-    ]
-    state = "Brandenburg"
-    merged_data = prepare_data(parameter_list, state)
-    str_parameter_list = [str(param) for param in parameter_list]
-    feature_list = ["Year", "Month"] + str_parameter_list
-    model_results = prepare_data_for_ml(merged_data, feature_list)
+# if __name__ == "__main__":
+#     parameter_list = [
+#         wt.DwdObservationParameter.MONTHLY.PRECIPITATION_HEIGHT,
+#         wt.DwdObservationParameter.MONTHLY.TEMPERATURE_AIR_MAX_200,
+#         wt.DwdObservationParameter.MONTHLY.WIND_FORCE_BEAUFORT,
+#         wt.DwdObservationParameter.MONTHLY.SUNSHINE_DURATION,
+#     ]
+#     state = "Brandenburg"
+#     merged_data = prepare_data(parameter_list, state)
+#     str_parameter_list = [str(param) for param in parameter_list]
+#     feature_list = ["Year", "Month"] + str_parameter_list
+#     model_results = prepare_data_for_ml(merged_data, feature_list)
 
-    for model_name, metrics in model_results.items():
-        print(f"{model_name} - MSE: {metrics['mse']}, R2: {metrics['r2_score']}")
-        if model_name == "Linear Regression":
-            print("Coefficients:", metrics["model"].coef_)
+#     for model_name, metrics in model_results.items():
+#         print(f"{model_name} - MSE: {metrics['mse']}, R2: {metrics['r2_score']}")
+#         if model_name == "Linear Regression":
+#             print("Coefficients:", metrics["model"].coef_)

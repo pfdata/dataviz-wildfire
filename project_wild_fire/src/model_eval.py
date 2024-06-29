@@ -8,7 +8,7 @@ from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
 from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, r2_score
 
-# import logging
+import logging
 
 # Configure logging
 # logging.basicConfig(
@@ -31,7 +31,7 @@ def fetch_and_process_weather_data(parameter, state):
         weather_data["Month"] = weather_data["Month"].astype(int)
         parameter_column_name = f"{parameter}"
         weather_data.rename(columns={"value": parameter_column_name}, inplace=True)
-        weather_data = weather_data.groupby(["Year", "Month"]).mean().reset_index()
+        # weather_data = weather_data.groupby(["Year", "Month"]).mean().reset_index()
         return weather_data
     except Exception as e:
         logging.error(
@@ -66,7 +66,7 @@ def prepare_data(parameters, state):
     weather_columns.remove("Month")
     new_column_order = ["Year", "Month"] + weather_columns + ["nFires"]
     merged_data = merged_data[new_column_order]
-
+    merged_data.dropna(inplace=True)
     return merged_data
 
 
@@ -93,6 +93,34 @@ def evaluate_models(X_train, X_test, y_train, y_test):
     return results
 
 
+def evaluate_model(X_train, X_test, y_train, y_test, model_name):
+    models = {
+        "Linear Regression": LinearRegression(),
+        "Ridge Regression": Ridge(),
+        "Lasso Regression": Lasso(),
+        "Decision Tree Regression": DecisionTreeRegressor(),
+        "Random Forest Regression": RandomForestRegressor(),
+        "Support Vector Regression": SVR(),
+        "Gradient Boosting Regression": GradientBoostingRegressor(),
+    }
+
+    if model_name not in models:
+        raise ValueError(
+            f"Model {model_name} not recognized. Available models: {list(models.keys())}"
+        )
+
+    model = models[model_name]
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    mse = mean_squared_error(y_test, y_pred)
+    r2 = r2_score(y_test, y_pred)
+
+    result = {"model": model, "mse": mse, "r2_score": r2}
+    # logging.info(f"{model_name} - MSE: {mse}, R2: {r2}")
+
+    return result
+
+
 def prepare_data_for_ml(merged_data, features, test_size=0.2, random_state=42):
     X = merged_data[features]
     y = merged_data["nFires"]
@@ -109,7 +137,7 @@ def prepare_data_for_ml(merged_data, features, test_size=0.2, random_state=42):
 #     parameter_list = [
 #         wt.DwdObservationParameter.MONTHLY.PRECIPITATION_HEIGHT,
 #         wt.DwdObservationParameter.MONTHLY.TEMPERATURE_AIR_MAX_200,
-#         wt.DwdObservationParameter.MONTHLY.TEMPERATURE_AIR_MIN_200,
+#         wt.DwdObservationParameter.MONTHLY.WIND_FORCE_BEAUFORT,
 #         wt.DwdObservationParameter.MONTHLY.SUNSHINE_DURATION,
 #     ]
 #     state = "Brandenburg"

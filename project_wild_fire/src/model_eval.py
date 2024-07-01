@@ -139,7 +139,7 @@ def evaluate_model(X_train, X_test, y_train, y_test, model_name):
     mse = mean_squared_error(y_test, y_pred)
     r2 = r2_score(y_test, y_pred)
 
-    result = {"model": model, "mse": mse, "r2_score": r2}
+    result = {"model": model, "mse": mse, "r2_score": r2, "y_pred": y_pred}
     # logging.info(f"{model_name} - MSE: {mse}, R2: {r2}")
 
     return result
@@ -197,57 +197,5 @@ def hyperparameter_tuning(
     return best_params, best_model
 
 
-if __name__ == "__main__":
-    parameter_list = [
-        wt.DwdObservationParameter.MONTHLY.PRECIPITATION_HEIGHT,
-        wt.DwdObservationParameter.MONTHLY.WIND_FORCE_BEAUFORT,
-        wt.DwdObservationParameter.MONTHLY.SUNSHINE_DURATION,
-    ]
-    state = "Baden-Württemberg"
-    weather_data = prepare_weather_data(parameter_list, state)
-    state_wildfire_data = prepare_wildfire_data(state)
-    combined_weather_data = weather_data[0]
-
-    for additional_data in weather_data[1:]:
-        combined_weather_data = pd.merge(
-            combined_weather_data, additional_data, on=["Year", "Month"]
-        )
-    merged_data = pd.merge(
-        combined_weather_data, state_wildfire_data, on=["Year", "Month"]
-    )
-
-    weather_columns = combined_weather_data.columns.tolist()
-    weather_columns.remove("Year")
-    weather_columns.remove("Month")
-    new_column_order = ["Year", "Month"] + weather_columns + ["nFires"]
-    merged_data = merged_data[new_column_order]
-    merged_data.dropna(inplace=True)
-    merged_data["state"] = state
-    merged_data.to_csv(common_paths.DATA.joinpath(f"dwd/{state}.csv"))
-    # merged_data = prepare_data(parameter_list, state)
-# str_parameter_list = [str(param) for param in parameter_list]
-# feature_list = ["Year", "Month"] + str_parameter_list
-# model_results = prepare_data_for_ml(merged_data, feature_list)
-
-# for model_name, metrics in model_results.items():
-#     print(f"{model_name} - MSE: {metrics['mse']}, R2: {metrics['r2_score']}")
-#     if model_name == "Linear Regression":
-#         print("Coefficients:", metrics["model"].coef_)
-# shortname_to_state = {
-#     "BW": "Baden-Württemberg",
-#     "BY": "Bayern",
-#     "BE": "Berlin",
-#     "BB": "Brandenburg",
-#     "HB": "Bremen",
-#     "HH": "Hamburg",
-#     "HE": "Hessen",
-#     "MV": "Mecklenburg-Vorpommern",
-#     "NI": "Niedersachsen",
-#     "NW": "Nordrhein-Westfalen",
-#     "RP": "Rheinland-Pfalz",
-#     "SL": "Saarland",
-#     "SN": "Sachsen",
-#     "ST": "Sachsen-Anhalt",
-#     "SH": "Schleswig-Holstein",
-#     "TH": "Thüringen",
-# }
+# if __name__ == "__main__":
+#     pass

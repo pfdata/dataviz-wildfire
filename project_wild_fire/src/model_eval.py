@@ -24,7 +24,7 @@ def fetch_and_process_weather_data(parameter, state):
         weather_data["Month"] = weather_data["date"].dt.month
         weather_data.sort_values(by=["Month", "Year"], inplace=True)
         weather_data.drop(
-            columns=["station_id", "dataset", "date", "quality", "parameter"],
+            columns=["dataset", "date", "quality", "parameter"],
             inplace=True,
         )
         weather_data["Year"] = weather_data["Year"].astype(int)
@@ -48,25 +48,24 @@ def prepare_data(parameters, state):
 
     for additional_data in weather_data_list[1:]:
         combined_weather_data = pd.merge(
-            combined_weather_data, additional_data, on=["Year", "Month"]
+            combined_weather_data, additional_data, on=["Year", "Month", "station_id" ], how ='outer'
         )
 
     wildfire_obj = waldbrand.WildFire()
-    wildfire_df = wildfire_obj.get_montly_numbers()
-    state_wildfire_data = wildfire_df.loc[[state]]
-    state_wildfire_data = wildfire_obj.melt_and_map_months(state_wildfire_data)
+    wildfire_nr_df = wildfire_obj.get_montly_numbers()
+    state_wildfire_data = wildfire_nr_df.loc[[state]]
+    state_wildfire_data = wildfire_obj.melt_and_map_months_nr(state_wildfire_data)
     state_wildfire_data["Year"] = state_wildfire_data["Year"].astype(int)
     state_wildfire_data["Month"] = state_wildfire_data["Month"].astype(int)
     merged_data = pd.merge(
         combined_weather_data, state_wildfire_data, on=["Year", "Month"]
     )
-
     weather_columns = combined_weather_data.columns.tolist()
     weather_columns.remove("Year")
     weather_columns.remove("Month")
-    new_column_order = ["Year", "Month"] + weather_columns + ["nFires"]
+    new_column_order = ["Year", "Month"]+ weather_columns + ["nFires", ]
     merged_data = merged_data[new_column_order]
-    merged_data.dropna(inplace=True)
+    #merged_data.dropna(inplace=True)
     return merged_data
 
 
@@ -199,3 +198,5 @@ def hyperparameter_tuning(
 
 # if __name__ == "__main__":
 #     pass
+
+#%%

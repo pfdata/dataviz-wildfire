@@ -22,6 +22,8 @@ def fetch_and_process_weather_data(parameter, state):
         weather_data["date"] = pd.to_datetime(weather_data["date"])
         weather_data["Year"] = weather_data["date"].dt.year
         weather_data["Month"] = weather_data["date"].dt.month
+
+
         weather_data.sort_values(by=["Month", "Year"], inplace=True)
         weather_data.drop(
             columns=["dataset", "date", "quality", "parameter"],
@@ -40,7 +42,7 @@ def fetch_and_process_weather_data(parameter, state):
         return pd.DataFrame()
 
 
-def prepare_data(parameters, state):
+def prepare_data(parameters, state, weather_param):
     weather_data_list = [
         fetch_and_process_weather_data(param, state) for param in parameters
     ]
@@ -48,13 +50,20 @@ def prepare_data(parameters, state):
 
     for additional_data in weather_data_list[1:]:
         combined_weather_data = pd.merge(
-            combined_weather_data, additional_data, on=["Year", "Month", "station_id" ], how ='outer'
+            combined_weather_data, additional_data, on=["Year", "Month", "station_id"], how ='outer'
         )
 
     wildfire_obj = waldbrand.WildFire()
-    wildfire_nr_df = wildfire_obj.get_montly_numbers()
-    state_wildfire_data = wildfire_nr_df.loc[[state]]
-    state_wildfire_data = wildfire_obj.melt_and_map_months_nr(state_wildfire_data)
+    if weather_param == "area":
+        wildfire_df = wildfire_obj.get_monthly_area()
+    elif weather_param == "nr":
+        wildfire_df = wildfire_obj.get_montly_numbers()
+    else: logging.error(print("Either choose nr or area")) 
+    state_wildfire_data = wildfire_df.loc[[state]]
+    if weather_param == "area":
+        state_wildfire_data = wildfire_obj.melt_and_map_months_area(state_wildfire_data)
+    else:
+        state_wildfire_data = wildfire_obj.melt_and_map_months_nr(state_wildfire_data)
     state_wildfire_data["Year"] = state_wildfire_data["Year"].astype(int)
     state_wildfire_data["Month"] = state_wildfire_data["Month"].astype(int)
     merged_data = pd.merge(
@@ -63,11 +72,12 @@ def prepare_data(parameters, state):
     weather_columns = combined_weather_data.columns.tolist()
     weather_columns.remove("Year")
     weather_columns.remove("Month")
-    new_column_order = ["Year", "Month"]+ weather_columns + ["nFires", ]
+    if weather_param == "area":
+        new_column_order = ["Year", "Month"] + weather_columns + ["area"]
+    else:
+        new_column_order = ["Year", "Month"] + weather_columns + ["nFires"]
     merged_data = merged_data[new_column_order]
-    #merged_data.dropna(inplace=True)
     return merged_data
-
 
 def prepare_wildfire_data(state: str):
     wildfire_obj = waldbrand.WildFire()
@@ -87,7 +97,7 @@ def prepare_weather_data(parameters, state):
 
     for additional_data in weather_data_list[1:]:
         combined_weather_data = pd.merge(
-            combined_weather_data, additional_data, on=["Year", "Month"]
+            combined_weather_data, additional_data, on=["Year", "Month", ]
         )
 
     return weather_data_list

@@ -205,6 +205,34 @@ def hyperparameter_tuning(
 
     return best_params, best_model
 
+'''
+def compute_statistics(df, parameters):
+    for param in parameters:
+        mean = df[param].sum()/df[param].count()
+        variance = 0
+        str = {'param: ' param ' mean: ' mean ' variance: ' variance}
+    return str'''
+
+def setYears(df):
+    df = df.where(df.Year>=1995).where(df.Year<=2022)
+    return df
+
+def rename_params(df):
+    df.rename(columns={'CLIMATE_SUMMARY.PRECIPITATION_HEIGHT':'pr', 'CLIMATE_SUMMARY.WIND_FORCE_BEAUFORT':'sfcWind', 'CLIMATE_SUMMARY.TEMPERATURE_AIR_MAX_200':'tasmax'}, inplace=True)
+    return df
+
+def transform_windspeed(df):
+    df['sfcWind'] =  0.836 * (df['sfcWind'] ** 1.5)
+    return df
+
+def station_means(df):
+    monthly_means = df.groupby(['Year', 'Month']).agg({
+        'pr': 'mean',
+        'sfcWind': 'mean',
+        'tasmax': 'mean'
+    }, 'area').reset_index()
+    return monthly_means
+
 
 # if __name__ == "__main__":
 #     pass

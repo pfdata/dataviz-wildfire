@@ -42,7 +42,7 @@ def fetch_and_process_weather_data(parameter, state):
         return pd.DataFrame()
 
 
-def prepare_data(parameters, state, weather_param):
+def prepare_data(parameters, state):
     weather_data_list = [
         fetch_and_process_weather_data(param, state) for param in parameters
     ]
@@ -54,29 +54,40 @@ def prepare_data(parameters, state, weather_param):
         )
 
     wildfire_obj = waldbrand.WildFire()
-    if weather_param == "area":
-        wildfire_df = wildfire_obj.get_monthly_area()
-    elif weather_param == "nr":
-        wildfire_df = wildfire_obj.get_montly_numbers()
-    else: logging.error(print("Either choose nr or area")) 
-    state_wildfire_data = wildfire_df.loc[[state]]
-    if weather_param == "area":
-        state_wildfire_data = wildfire_obj.melt_and_map_months_area(state_wildfire_data)
-    else:
-        state_wildfire_data = wildfire_obj.melt_and_map_months_nr(state_wildfire_data)
-    state_wildfire_data["Year"] = state_wildfire_data["Year"].astype(int)
-    state_wildfire_data["Month"] = state_wildfire_data["Month"].astype(int)
+
+    #dataframes = [get_monthly_area(), get_montly_numbers()]
+    #for df in dataframes:
+    area_fire = wildfire_obj.get_monthly_area()
+    nr_fire = wildfire_obj.get_montly_numbers()
+
+    nr_fire = nr_fire.loc[[state]]
+    area_fire = area_fire.loc[[state]]
+    
+    area_fire = wildfire_obj.melt_and_map_months_area(area_fire)
+    nr_fire = wildfire_obj.melt_and_map_months_nr(nr_fire)
+    
+    area_fire["Year"] = area_fire["Year"].astype(int)
+    nr_fire["Year"] = nr_fire["Year"].astype(int)
+    area_fire["Month"] = area_fire["Month"].astype(int)
+    nr_fire["Month"] = nr_fire["Month"].astype(int)
+
+    merged = pd.merge(area_fire, nr_fire, on=['Year', 'Month'], how='outer')
+    
     merged_data = pd.merge(
-        combined_weather_data, state_wildfire_data, on=["Year", "Month"]
+        combined_weather_data, merged, on=["Year", "Month"]
     )
+    
     weather_columns = combined_weather_data.columns.tolist()
     weather_columns.remove("Year")
     weather_columns.remove("Month")
-    if weather_param == "area":
-        new_column_order = ["Year", "Month"] + weather_columns + ["area"]
-    else:
-        new_column_order = ["Year", "Month"] + weather_columns + ["nFires"]
+    new_column_order = ["Year", "Month"] + weather_columns + ["nFires", "area"]
     merged_data = merged_data[new_column_order]
+    
+    rename_params(merged_data)
+    transform_windspeed(merged_data)
+    merged_data.dropna(inplace=True)
+    #merged_data.to_csv(common_paths.DATA.joinpath("dwd/data_Brandenburg.csv"))
+    
     return merged_data
 
 def prepare_wildfire_data(state: str):

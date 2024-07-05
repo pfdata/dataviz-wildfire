@@ -166,8 +166,8 @@ def prepare_data_for_ml(merged_data, features, test_size=0.2, random_state=42):
     return results
 
 
-def hyperparameter_tuning(
-    merged_data, parameter_list, target_column="nFires", test_size=0.2, random_state=42
+'''def hyperparameter_tuning(
+    merged_all, parameter_list, target_column=merged_all[-1], test_size=0.2, random_state=42
 ):
     # Convert parameter list to string format for feature selection
     str_parameter_list = [str(param) for param in parameter_list]
@@ -204,7 +204,7 @@ def hyperparameter_tuning(
     best_model = grid_search.best_estimator_
 
     return best_params, best_model
-
+'''
 '''
 def compute_statistics(df, parameters):
     for param in parameters:
@@ -240,6 +240,18 @@ def station_means(df):
     
     return df
 
+def grid_means(df):
+    df.dropna(inplace=True)
+    weather_var = df[['pr', 'sfcWind', 'tasmax']]
+    date_var = df[['Year', 'Month']]
+    df = df.groupby(['Year', 'Month']).agg({
+        'pr': 'mean',
+        'sfcWind': 'mean',
+        'tasmax': 'mean'
+    }).reset_index()
+    new_column_order = ['Year', 'Month', 'pr', 'sfcWind', 'tasmax']
+    df = df[new_column_order]
+    return df
 
 # if __name__ == "__main__":
 #     pass

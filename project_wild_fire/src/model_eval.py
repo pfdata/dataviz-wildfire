@@ -86,7 +86,7 @@ def prepare_data(parameters, state):
     rename_params(merged_data)
     transform_windspeed(merged_data)
     merged_data.dropna(inplace=True)
-    #merged_data.to_csv(common_paths.DATA.joinpath("dwd/data_Brandenburg.csv"))
+    merged_data.to_csv(common_paths.DATA.joinpath("dwd/data_Brandenburg.csv"))
     
     return merged_data
 
@@ -146,6 +146,7 @@ def evaluate_model(X_train, X_test, y_train, y_test, model_name):
         "Random Forest Regression": RandomForestRegressor(),
         "Support Vector Regression": SVR(),
         "Gradient Boosting Regression": GradientBoostingRegressor(),
+        
     }
 
     if model_name not in models:

@@ -239,15 +239,14 @@ def transform_windspeed(df):
 
 def station_means(df):
     df.dropna(inplace=True)
-    dep_var = df.columns[-1]
-    weather_var = df[['pr', 'sfcWind', 'tasmax']]
-    df = df.groupby(['Year', 'Month', dep_var]).agg({
+    dep_var = [df.columns[-1]]
+    df = df.groupby(['Year', 'Month', 'area', 'nFires']).agg({
         'pr': 'mean',
         'sfcWind': 'mean',
         'tasmax': 'mean'
     }).reset_index()
     
-    new_column_order = ['Year', 'Month', 'pr', 'sfcWind', 'tasmax',  dep_var]
+    new_column_order = ['Year', 'Month', 'pr', 'sfcWind', 'tasmax',  'area', 'nFires']
     df = df[new_column_order]
     
     return df

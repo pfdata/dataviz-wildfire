@@ -9,6 +9,7 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, r2_score
 import common_paths
 import logging
+import numpy as np
 
 # Configure logging
 # logging.basicConfig(
@@ -86,6 +87,7 @@ def prepare_data(parameters, state):
     rename_params(merged_data)
     transform_windspeed(merged_data)
     merged_data.dropna(inplace=True)
+    merged_data[['area']] = merged_data[['area']].apply(pd.to_numeric)    
     merged_data.to_csv(common_paths.DATA.joinpath("dwd/data_Brandenburg.csv"))
     
     return merged_data
@@ -254,13 +256,13 @@ def station_means(df):
 def grid_means(df):
     df.dropna(inplace=True)
     weather_var = df[['pr', 'sfcWind', 'tasmax']]
-    date_var = df[['Year', 'Month']]
+    date_var = df[['Year', 'Month', 'nFires', 'area']]
     df = df.groupby(['Year', 'Month']).agg({
         'pr': 'mean',
         'sfcWind': 'mean',
         'tasmax': 'mean'
     }).reset_index()
-    new_column_order = ['Year', 'Month', 'pr', 'sfcWind', 'tasmax']
+    new_column_order = ['Year', 'Month', 'pr', 'sfcWind', 'tasmax', 'nFires', 'area']
     df = df[new_column_order]
     return df
 

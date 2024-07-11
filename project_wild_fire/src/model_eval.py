@@ -9,6 +9,7 @@ from sklearn.svm import SVR
 from sklearn.metrics import mean_squared_error, r2_score
 import common_paths
 import logging
+import numpy as np
 
 # Configure logging
 # logging.basicConfig(
@@ -22,9 +23,11 @@ def fetch_and_process_weather_data(parameter, state):
         weather_data["date"] = pd.to_datetime(weather_data["date"])
         weather_data["Year"] = weather_data["date"].dt.year
         weather_data["Month"] = weather_data["date"].dt.month
+
+
         weather_data.sort_values(by=["Month", "Year"], inplace=True)
         weather_data.drop(
-            columns=["station_id", "dataset", "date", "quality", "parameter"],
+            columns=["dataset", "date", "quality", "parameter"],
             inplace=True,
         )
         weather_data["Year"] = weather_data["Year"].astype(int)
@@ -48,27 +51,46 @@ def prepare_data(parameters, state):
 
     for additional_data in weather_data_list[1:]:
         combined_weather_data = pd.merge(
-            combined_weather_data, additional_data, on=["Year", "Month"]
+            combined_weather_data, additional_data, on=["Year", "Month", "station_id"], how ='outer'
         )
 
     wildfire_obj = waldbrand.WildFire()
-    wildfire_df = wildfire_obj.get_montly_numbers()
-    state_wildfire_data = wildfire_df.loc[[state]]
-    state_wildfire_data = wildfire_obj.melt_and_map_months(state_wildfire_data)
-    state_wildfire_data["Year"] = state_wildfire_data["Year"].astype(int)
-    state_wildfire_data["Month"] = state_wildfire_data["Month"].astype(int)
-    merged_data = pd.merge(
-        combined_weather_data, state_wildfire_data, on=["Year", "Month"]
-    )
 
+    #dataframes = [get_monthly_area(), get_montly_numbers()]
+    #for df in dataframes:
+    area_fire = wildfire_obj.get_monthly_area()
+    nr_fire = wildfire_obj.get_montly_numbers()
+
+    nr_fire = nr_fire.loc[[state]]
+    area_fire = area_fire.loc[[state]]
+    
+    area_fire = wildfire_obj.melt_and_map_months_area(area_fire)
+    nr_fire = wildfire_obj.melt_and_map_months_nr(nr_fire)
+    
+    area_fire["Year"] = area_fire["Year"].astype(int)
+    nr_fire["Year"] = nr_fire["Year"].astype(int)
+    area_fire["Month"] = area_fire["Month"].astype(int)
+    nr_fire["Month"] = nr_fire["Month"].astype(int)
+
+    merged = pd.merge(area_fire, nr_fire, on=['Year', 'Month'], how='outer')
+    
+    merged_data = pd.merge(
+        combined_weather_data, merged, on=["Year", "Month"]
+    )
+    
     weather_columns = combined_weather_data.columns.tolist()
     weather_columns.remove("Year")
     weather_columns.remove("Month")
-    new_column_order = ["Year", "Month"] + weather_columns + ["nFires"]
+    new_column_order = ["Year", "Month"] + weather_columns + ["nFires", "area"]
     merged_data = merged_data[new_column_order]
+    
+    rename_params(merged_data)
+    transform_windspeed(merged_data)
     merged_data.dropna(inplace=True)
+    merged_data[['area']] = merged_data[['area']].apply(pd.to_numeric)    
+    merged_data.to_csv(common_paths.DATA.joinpath("dwd/data_Brandenburg.csv"))
+    
     return merged_data
-
 
 def prepare_wildfire_data(state: str):
     wildfire_obj = waldbrand.WildFire()
@@ -88,7 +110,7 @@ def prepare_weather_data(parameters, state):
 
     for additional_data in weather_data_list[1:]:
         combined_weather_data = pd.merge(
-            combined_weather_data, additional_data, on=["Year", "Month"]
+            combined_weather_data, additional_data, on=["Year", "Month", ]
         )
 
     return weather_data_list
@@ -126,6 +148,7 @@ def evaluate_model(X_train, X_test, y_train, y_test, model_name):
         "Random Forest Regression": RandomForestRegressor(),
         "Support Vector Regression": SVR(),
         "Gradient Boosting Regression": GradientBoostingRegressor(),
+        
     }
 
     if model_name not in models:
@@ -157,8 +180,8 @@ def prepare_data_for_ml(merged_data, features, test_size=0.2, random_state=42):
     return results
 
 
-def hyperparameter_tuning(
-    merged_data, parameter_list, target_column="nFires", test_size=0.2, random_state=42
+'''def hyperparameter_tuning(
+    merged_all, parameter_list, target_column=merged_all[-1], test_size=0.2, random_state=42
 ):
     # Convert parameter list to string format for feature selection
     str_parameter_list = [str(param) for param in parameter_list]
@@ -195,7 +218,55 @@ def hyperparameter_tuning(
     best_model = grid_search.best_estimator_
 
     return best_params, best_model
+'''
+'''
+def compute_statistics(df, parameters):
+    for param in parameters:
+        mean = df[param].sum()/df[param].count()
+        variance = 0
+        str = {'param: ' param ' mean: ' mean ' variance: ' variance}
+    return str'''
 
+def setYears(df):
+    df = df.where(df.Year>=1995).where(df.Year<=2022)
+    return df
+
+def rename_params(df):
+    df.rename(columns={'CLIMATE_SUMMARY.PRECIPITATION_HEIGHT':'pr', 'CLIMATE_SUMMARY.WIND_FORCE_BEAUFORT':'sfcWind', 'CLIMATE_SUMMARY.TEMPERATURE_AIR_MAX_200':'tasmax'}, inplace=True)
+    return df
+
+def transform_windspeed(df):
+    df['sfcWind'] =  0.836 * (df['sfcWind'] ** 1.5)
+    return df
+
+def station_means(df):
+    df.dropna(inplace=True)
+    dep_var = [df.columns[-1]]
+    df = df.groupby(['Year', 'Month', 'area', 'nFires']).agg({
+        'pr': 'mean',
+        'sfcWind': 'mean',
+        'tasmax': 'mean'
+    }).reset_index()
+    
+    new_column_order = ['Year', 'Month', 'pr', 'sfcWind', 'tasmax',  'area', 'nFires']
+    df = df[new_column_order]
+    
+    return df
+
+def grid_means(df):
+    df.dropna(inplace=True)
+    weather_var = df[['pr', 'sfcWind', 'tasmax']]
+    date_var = df[['Year', 'Month', 'nFires', 'area']]
+    df = df.groupby(['Year', 'Month']).agg({
+        'pr': 'mean',
+        'sfcWind': 'mean',
+        'tasmax': 'mean'
+    }).reset_index()
+    new_column_order = ['Year', 'Month', 'pr', 'sfcWind', 'tasmax', 'nFires', 'area']
+    df = df[new_column_order]
+    return df
 
 # if __name__ == "__main__":
 #     pass
+
+#%%

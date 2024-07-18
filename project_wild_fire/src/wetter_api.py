@@ -4,7 +4,6 @@ from wetterdienst.provider.dwd.observation import (
 )
 from wetterdienst import Period, Resolution
 import polars as pl
-import datetime as dt
 
 
 def fetch_observation_data(parameter, state):

@@ -1,111 +1,88 @@
 # Wildfire Data Analysis and Visualization
 
-This repository explores wildfire patterns in Germany, with a particular focus on Brandenburg. It combines historical wildfire statistics with weather observations to investigate how precipitation, wind speed, temperature, and other climate variables relate to the number of forest fires and the area burned.
+This repository explores wildfire patterns in Germany, with a focus on Brandenburg. It combines historical wildfire statistics with weather observations to investigate how precipitation, wind speed, temperature, and other climate variables relate to the number of forest fires and the area burned.
 
-The project uses wildfire records from the German Federal Ministry of Food and Agriculture (BMEL) and historical weather data from the German Weather Service (DWD). The available BMEL records cover 1995-2022 and include monthly fire counts, burned areas, fire causes, and affected forest types.
+The project uses wildfire records from the German Federal Ministry of Food and Agriculture (BMEL) and historical weather observations from the German Weather Service (DWD). The available BMEL records cover 1995-2022 and include monthly fire counts, burned areas, fire causes, and affected forest types. Future exploratory projections use regional climate-model data.
 
-The repository contains tools and notebooks for:
+## What The Project Does
 
-- collecting and preparing BMEL and DWD data;
-- merging wildfire records with monthly weather observations;
-- visualizing geographic and historical wildfire trends;
-- evaluating relationships between weather conditions and wildfire activity; and
-- comparing regression models for predicting the number of fires.
+- Loads and reshapes annual BMEL wildfire tables.
+- Retrieves and normalizes monthly DWD station observations.
+- Aggregates weather to one state-level record per month.
+- Evaluates regression models with chronological cross-validation.
+- Produces nonnegative exploratory projections of fire counts and burned area.
+- Presents historical patterns, weather relationships, and model diagnostics in Marimo notebooks.
 
-Most project files are located in `project_wild_fire/`:
+Associations and projections in this repository are exploratory. They are not an operational wildfire-risk forecast and should not be interpreted as evidence that weather alone caused individual fires.
 
-- `data/` contains the source and processed datasets;
-- `src/` contains data-processing, modeling, and visualization code; and
-- `output/` contains generated charts and other analysis results.
+## Repository Structure
 
-## Virtual enviroments
-
-Usage of virtual enviroments to make sure that the project is compatible in every machine.
-
-To create a new virtual enviroment `python -m venv <directory>` In this case it is important to use the naming convention for the directory as .venv or .env. (This folder will be ignore in the .gitignore file).
-
-How to activate the virtual enviroment?
-
-- Windows venv activation:
-
-```
-# In cmd.exe
-venv\Scripts\activate.bat
-# In PowerShell
-venv\Scripts\Activate.ps1
+```text
+project_wild_fire/
+├── data/                    # Raw and derived BMEL, DWD, GIS, and climate data
+├── notebooks/               # Marimo presentation and diagnostics applications
+├── output/                  # Generated charts and analysis artifacts
+├── scripts/                 # Data acquisition commands
+├── src/wildfire_analysis/   # Reusable data, modeling, and visualization code
+└── tests/                   # Automated tests
 ```
 
-- Linux and MacOS venv activation:
+The notebooks contain presentation and reactive controls only. Reusable loading, transformation, modeling, and plotting functions are defined under `project_wild_fire/src/wildfire_analysis/`.
 
-```
-source myvenv/bin/activate
-```
+## Installation
 
-For all platforms it is needed just to call `deactivate` and you are out from this env.
+Python 3.12 or newer is required.
 
-Everytime a package is installed, for example: `pip install numpy`, the requirements.txt file should be updated. To catch up the updated version in a new virtual enviroment you can call `pip install -r requirements.txt` and that is, you project is ready to go.
-
-## Software Requirements
-
-- Python 3.12.2
-- anaconda Command line client (version 1.12.3)
-- pip 24.0
-
-All the required packages will be listed on the `requirements.txt` file.
-
-## Project planning:
-
-A copy of the project planning will be at [Project Notes](./notes/project_plan.md). Otherwise use the link to contribute online at [Hackmd - Planning](https://hackmd.informatik.uni-bremen.de/j6lQBfpTSDOP7SPxjBKXQg).
-
-## Python Scripts - Jupyter
-
-The idea is to showcase cenarios the jupyter notebooks are optimal. But for software development they are not great. For now it is not possible to keep the versions fo the software since it is recoginized as an executable by GIT system.
-
-Convert (all) Jupyter notebooks to python:
-
-```
-jupyter nbconvert *.ipynb  --to="python"
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -e ".[test]"
 ```
 
-Convert python scripts to jupyter (the package p2j should be in the requirements list):
+The same editable installation can be started with `python3 -m pip install -r requirements.txt`.
 
-```
-p2j script.py
-```
+## Marimo Applications
 
-## Our Project:
+Start the narrative wildfire report:
 
-The folder structure follow as this:
-
-```
-project_wild_fire
-├── docs
-├── output
-├── sample
-├── src
-└── tests
+```bash
+marimo edit project_wild_fire/notebooks/wildfire_story.py
 ```
 
-## References:
+Start the model diagnostics report:
 
-- [Virtual Env](https://python.land/virtual-environments/virtualenv)
-- [Classes Slides](https://nc.uni-bremen.de/index.php/s/MWxosSLCQxKPapZ)
-- [Jupyter Uni Bremen](https://jupyter.uni-bremen.de/)
-- [Forschung Professor: Klimageographie](https://www.uni-bremen.de/geographie/personen/personen-a-z/prof-dr-ben-marzeion)
+```bash
+marimo edit project_wild_fire/notebooks/model_diagnostics.py
+```
 
-## Tasks
+Use `marimo run` instead of `marimo edit` to serve either notebook in read-only application mode.
 
-| Task Description                                                                         | Assignee | Status      |
-| ---------------------------------------------------------------------------------------- | -------- | ----------- |
-| Write Exposé                                                                             | @all     | In Progress |
-| Extract information from the DWD portal                                                  | -        | Not Started |
-| Extract information from the Brandstatistik PDF's                                        | -        | Not Started |
-| Filter/Clean/Convert Raw data DWD Portal                                                 | -        | Not Started |
-| Filter/Clean/Convert Raw data Brandstatistik                                             | -        | Not Started |
-| Creating a unique env to test models with our stable database                            | -        | Not Started |
-| Developing basic visualisation functions to help evaluate the model development          | -        | Not Started |
-| Deep analysis in the model training - here each pearson could train a model (if nessary) | -        | Not Started |
-| Visualisation techniques discussion - Focus on formats, display, intereaction            | -        | Not Started |
-| Visualisation design discussion - Focus on colors, text, size                            | -        | Not Started |
-| Writting unit tests for each application (arrange - act - assert)                        | -        | Not Started |
-| Code refactoring - reduce redudancy                                                      | -        | Not Started |
+## Model Workflow
+
+Historical DWD station observations are averaged to one row for each state, year, and month before they are joined with BMEL targets. This prevents the same monthly wildfire target from being repeated as independent samples for multiple stations.
+
+Models are evaluated with expanding-window temporal splits rather than random row splits. Preprocessing is encapsulated in fitted scikit-learn pipelines and reused for validation and future prediction. Predicted counts and areas are clipped at zero because negative wildfire activity is not meaningful.
+
+Future precipitation is converted from flux to a monthly total using the actual number of days in each calendar month. Climate-grid values are then averaged to one state-month record before prediction.
+
+## Data Acquisition
+
+Existing BMEL PDFs are preserved by default. Download missing annual PDFs with:
+
+```bash
+python3 project_wild_fire/scripts/download_bmel_pdfs.py
+```
+
+Pass `--force` only when existing PDFs should be replaced.
+
+## Tests
+
+```bash
+python3 -m pytest
+```
+
+## References
+
+- [BMEL statistics](https://www.bmel-statistik.de/)
+- [DWD Open Data](https://opendata.dwd.de/)
+- [Wetterdienst DWD coverage](https://wetterdienst.readthedocs.io/en/latest/data/coverage/dwd/observation.html)

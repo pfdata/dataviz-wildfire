@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=70"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wildfire-analysis"
+version = "0.1.0"
+description = "Analysis of weather and wildfire activity in Germany"
+requires-python = ">=3.12"
+dependencies = [
+    "geopandas>=0.14",
+    "marimo>=0.14",
+    "matplotlib>=3.9",
+    "pandas>=2.2",
+    "plotly>=5.22",
+    "scikit-learn>=1.4",
+    "statsmodels>=0.14",
+    "wetterdienst>=0.87",
+    "xarray>=2024.5",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8"]
+
+[tool.setuptools]
+package-dir = {"" = "project_wild_fire/src"}
+
+[tool.setuptools.packages.find]
+where = ["project_wild_fire/src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["project_wild_fire/src"]
+testpaths = ["project_wild_fire/tests"]

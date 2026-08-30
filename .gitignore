@@ -160,3 +160,9 @@ cython_debug/
 #.idea/
 /.DS_Store
 *.DS_Store
+
+# Large local datasets
+/project_wild_fire/data/**/*.nc
+/project_wild_fire/data/**/*.zip
+/project_wild_fire/data/dwd/Brandenburg.csv
+/project_wild_fire/data/dwd/DWD_future.csv

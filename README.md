@@ -1,4 +1,22 @@
-# data-science-viz
+# Wildfire Data Analysis and Visualization
+
+This repository explores wildfire patterns in Germany, with a particular focus on Brandenburg. It combines historical wildfire statistics with weather observations to investigate how precipitation, wind speed, temperature, and other climate variables relate to the number of forest fires and the area burned.
+
+The project uses wildfire records from the German Federal Ministry of Food and Agriculture (BMEL) and historical weather data from the German Weather Service (DWD). The available BMEL records cover 1995-2022 and include monthly fire counts, burned areas, fire causes, and affected forest types.
+
+The repository contains tools and notebooks for:
+
+- collecting and preparing BMEL and DWD data;
+- merging wildfire records with monthly weather observations;
+- visualizing geographic and historical wildfire trends;
+- evaluating relationships between weather conditions and wildfire activity; and
+- comparing regression models for predicting the number of fires.
+
+Most project files are located in `project_wild_fire/`:
+
+- `data/` contains the source and processed datasets;
+- `src/` contains data-processing, modeling, and visualization code; and
+- `output/` contains generated charts and other analysis results.
 
 ## Virtual enviroments
 
